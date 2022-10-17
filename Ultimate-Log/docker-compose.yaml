@@ -1,0 +1,24 @@
+networks:
+  internal-net:
+    external: false
+
+volumes:
+  log_volume:
+    
+services:
+  ultimate-logger:
+    restart: unless-stopped
+    container_name: ultimate-logger
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - log_volume:/var/lib/log_volume/data/
+    env_file:
+      - .env
+    expose:
+      - 15000
+    ports:
+      - 15000:15000
+    networks:
+      - internal-net
