@@ -75,6 +75,7 @@ namespace Ultimate_Log.Server
             }
             catch (Exception error)
             {
+                Console.WriteLine($"Error - {error}");
                 Server_Closing();
             }
         }

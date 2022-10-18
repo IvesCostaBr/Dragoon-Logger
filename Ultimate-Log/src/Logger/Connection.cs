@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using System;
+using System.Threading.Tasks;
 using Ultimate_Log.DTO;
 
 namespace Ultimate_Log.Logger
@@ -22,8 +23,13 @@ namespace Ultimate_Log.Logger
         {
             try
             {
-                colNews.InsertOneAsync(data);
-                return true;
+                if (data != null)
+                {
+                    colNews.InsertOne(data);
+                    return true;
+                }
+
+                return false;
             }
             catch (Exception e)
             {
