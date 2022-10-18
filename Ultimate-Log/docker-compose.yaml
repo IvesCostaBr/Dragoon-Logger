@@ -6,9 +6,9 @@ volumes:
   log_volume:
     
 services:
-  ultimate-logger:
+  dragoon-logger:
     restart: unless-stopped
-    container_name: ultimate-logger
+    container_name: dragoon-logger
     build:
       context: ./
       dockerfile: Dockerfile
