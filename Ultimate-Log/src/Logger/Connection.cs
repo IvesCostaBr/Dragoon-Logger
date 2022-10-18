@@ -19,13 +19,13 @@ namespace Ultimate_Log.Logger
             colNews = database.GetCollection<ReceiverLog>(Environment.GetEnvironmentVariable("COLLECTION"));
         }
 
-        public bool SaveLogInDatabse(ReceiverLog data)
+         public bool SaveLogInDatabse(ReceiverLog data)
         {
             try
             {
                 if (data != null)
                 {
-                    colNews.InsertOne(data);
+                    colNews.InsertOneAsync(data);
                     return true;
                 }
 

@@ -23,6 +23,14 @@ namespace Ultimate_Log.DTO
         public String User { get; set; }
         
         [Required]
+        [Display(Name = "Status")]
+        public String Status { get; set; }
+        
+        [Required]
+        [Display(Name = "Response")]
+        public String Response { get; set; }
+        
+        [Required]
         [Display(Name = "Sender")]
         public String Sender { get; set; }
         
