@@ -15,7 +15,7 @@ services:
     volumes:
       - log_volume:/var/lib/log_volume/data/
     env_file:
-      - .env
+      - ../.env
     expose:
       - 15000
     ports:
