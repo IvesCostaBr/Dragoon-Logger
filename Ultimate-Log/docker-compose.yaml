@@ -1,6 +1,7 @@
 networks:
   internal-net:
-    external: false
+    external: true
+    driver: bridge
 
 volumes:
   log_volume:
@@ -18,7 +19,5 @@ services:
       - ../.env
     expose:
       - 15000
-    ports:
-      - 15000:15000
     networks:
       - internal-net
