@@ -61,7 +61,7 @@ namespace Ultimate_Log.Server
                             response = Encoding.ASCII.GetString(bytes);
                             var obj = JsonConvert.DeserializeObject<ReceiverLog>(response);
                             var resp = _dbConnection.SaveLogInDatabse(obj);
-                            if(!resp) Console.WriteLine("erro ao gravar o log");
+                            if(!resp) Console.WriteLine($"erro ao gravar o log - {response}");
                         }
                         catch (Exception ex)
                         {

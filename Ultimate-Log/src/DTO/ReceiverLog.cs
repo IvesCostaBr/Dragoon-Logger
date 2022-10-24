@@ -41,5 +41,11 @@ namespace Ultimate_Log.DTO
         [Required]
         [Display(Name = "Payload")]
         public String Payload { get; set; }
+
+
+        public override string ToString()
+        {
+            return $"{Function} - {Date} - {User} - {Status} - {Response} - {Sender} - {Error} - {Payload}";
+        }
     }
 }
