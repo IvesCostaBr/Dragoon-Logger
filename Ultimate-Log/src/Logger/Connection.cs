@@ -14,9 +14,9 @@ namespace Ultimate_Log.Logger
 
         public Connection()
         {
-            client = new MongoClient("mongodb+srv://recharge:recharge%402022@cluster0.ri2aos7.mongodb.net/?retryWrites=true&w=majority");
-            database = client.GetDatabase("ultimate-log");            
-            colNews = database.GetCollection<ReceiverLog>("general-log");
+            client = new MongoClient(Environment.GetEnvironmentVariable("DATABASE_URI"));
+            database = client.GetDatabase(Environment.GetEnvironmentVariable("DATABASE"));            
+            colNews = database.GetCollection<ReceiverLog>(Environment.GetEnvironmentVariable("COLLECTION"));
         }
 
          public bool SaveLogInDatabse(ReceiverLog data)
