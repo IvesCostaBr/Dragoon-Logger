@@ -1,9 +1,6 @@
-name: CD DRAGON-staging
+name: CD DRAGON-PRD
 
 on:
-  push:
-    branches:
-      - 'dev'
   workflow_dispatch:
 
 env:
