@@ -18,17 +18,18 @@ public class LogController : ControllerBase
     
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public Task<List<ReceiverLog>> Get()
+    public Task<List<ReceiverLog>> Get([FromQuery] String collection)
     {
-        return _service.GetAllAsync();
+        return _service.GetAllAsync(collection);
     }
     
     [HttpGet("filter")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public Task<List<ReceiverLog>> Filter(
-        [FromQuery][Required]Dictionary<String, String> filter)
+        [FromQuery][Required]Dictionary<String, String> filter, 
+        [FromQuery] String collection)
     {
-        return _service.ListFilter(filter);
+        return _service.ListFilter(filter, collection);
     }
     
 }

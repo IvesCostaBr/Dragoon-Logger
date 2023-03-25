@@ -14,9 +14,9 @@ public class LogService: ILogService
         _repository = repository;
     }
 
-    public async Task<List<ReceiverLog>> GetAllAsync()
+    public async Task<List<ReceiverLog>> GetAllAsync(String collectionName)
     {
-        return await _repository.List().Find(_ => true).ToListAsync();
+        return await _repository.List(collectionName).Find(_ => true).ToListAsync();
     }
 
     public async Task<bool> SaveLog(ReceiverLog data)
@@ -24,8 +24,8 @@ public class LogService: ILogService
         return await _repository.Save(data);
     }
 
-    public async Task<List<ReceiverLog>> ListFilter(Dictionary<String, String> filter)
+    public async Task<List<ReceiverLog>> ListFilter(Dictionary<String, String> filter, String collectionName)
     {
-        return await _repository.ListFilter(filter);
+        return await _repository.ListFilter(filter, collectionName);
     }
 }

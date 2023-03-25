@@ -42,9 +42,16 @@ namespace Dragoon_Log.DTO
         public String Payload { get; set; }
         
         [Required]
+        [Display(Name = "HttpMethod")]
+        public String HttpMethod { get; set; }
+        
+        [Required]
         [Display(Name = "IP Address")]
         public String IpAddress { get; set; }
-
+        
+        [Required]
+        [Display(Name = "Collection")]
+        public String Collection { get; set; }
         public override string ToString()
         {
             return $"{Date} - {User} - {Status}";
