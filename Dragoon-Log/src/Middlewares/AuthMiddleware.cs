@@ -21,12 +21,12 @@ public class AuthenticationMiddleware
     
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        var clientId = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "Client-Id").Value.FirstOrDefault();
-        var clientSecret = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "Client-Secret").Value.FirstOrDefault();
         var password = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "Secret-Key").Value.FirstOrDefault();
+            x => x.Key == "Secret-Key").Value;
+        var clientId = httpContext.Request.Headers.FirstOrDefault(
+            x => x.Key == "Client-Id").Value;
+        var clientSecret = httpContext.Request.Headers.FirstOrDefault(
+            x => x.Key == "Client-Secret").Value;
         Console.WriteLine($"Key pass {password}");
         Console.WriteLine($"key expected {Config.PASSWORD}");
         var result = await _repo.Filter(clientId, clientSecret);
