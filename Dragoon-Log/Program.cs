@@ -18,26 +18,22 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo {Title = "API Dragoon", Version = "v1"});
 });
 
+IMapper mapper = MappingConfig.InitializeAutoMapper().CreateMapper();
+
 builder.Services.AddSingleton<ILogRepository, LogRepository>();
 builder.Services.AddSingleton<ILogService, LogService>();
 builder.Services.AddSingleton<IAuthRepository, AuthRepository>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddHostedService<ServerSocket>();
+builder.Services.AddSingleton(mapper);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(
-        "CorsPolicy", 
-        builder => builder.AllowAnyOrigin()
+    options.AddPolicy("CorsPolicy",
+        conf => conf.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials()
-        );
-});
-
-
-IMapper mapper = MappingConfig.InitializeAutoMapper().CreateMapper();
-builder.Services.AddSingleton(mapper);
-
+            .AllowCredentials());
+}); 
 
 var app = builder.Build();
 
@@ -48,12 +44,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<AuthenticationMiddleware>();
-
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
