@@ -1,5 +1,5 @@
 ﻿using System;
-using Ultimate_Log.Server;
+using Server;
 
 try
 {
@@ -11,3 +11,4 @@ catch (Exception e)
 {
     Console.WriteLine(e);
 }
+

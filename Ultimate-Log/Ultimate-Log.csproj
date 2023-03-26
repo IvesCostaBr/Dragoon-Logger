@@ -10,11 +10,20 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.NETCore.Platforms" Version="6.0.0" />
       <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="src\Logger\Interfaces" />
+      <Compile Remove="src\Logger\Interfaces\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="src\Logger\Interfaces\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="src\Logger\Interfaces\**" />
     </ItemGroup>
 </Project>
