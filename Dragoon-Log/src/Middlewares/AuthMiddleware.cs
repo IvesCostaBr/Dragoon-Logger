@@ -39,11 +39,3 @@ public class AuthenticationMiddleware
             await _next(httpContext);
     }
 }
-
-public static class AuthenticationMiddlewareExtensions
-{
-    public static IApplicationBuilder UseAuthenticationMiddleware(IApplicationBuilder builder)
-    {
-        return builder.UseMiddleware<AuthenticationMiddleware>();
-    }
-}
