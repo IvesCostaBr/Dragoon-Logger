@@ -22,7 +22,7 @@ public class AuthenticationMiddleware
     public async Task InvokeAsync(HttpContext httpContext)
     {
         var password = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "SecretKey").Value;
+            x => x.Key == "SecretKey").Value.FirstOrDefault();
         var clientId = httpContext.Request.Headers.FirstOrDefault(
             x => x.Key == "ClientId").Value;
         var clientSecret = httpContext.Request.Headers.FirstOrDefault(
