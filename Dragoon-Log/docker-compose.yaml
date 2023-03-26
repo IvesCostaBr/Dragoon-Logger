@@ -7,7 +7,7 @@ volumes:
   log_volume:
     
 services:
-  dragoon-logger:
+  dragoon_logger:
     restart: unless-stopped
     container_name: dragoon-logger
     build:
