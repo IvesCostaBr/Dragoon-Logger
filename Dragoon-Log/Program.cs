@@ -30,6 +30,7 @@ builder.Services.AddSingleton(mapper);
 var app = builder.Build();
 app.UseCors(conf =>
     conf.AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+app.UseMiddleware<AuthenticationMiddleware>();
 app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
@@ -37,7 +38,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
-app.UseMiddleware<AuthenticationMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
