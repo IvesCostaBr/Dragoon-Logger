@@ -26,7 +26,7 @@ public class AuthenticationMiddleware
         var clientSecret = httpContext.Request.Headers.FirstOrDefault(
             x => x.Key == "Client-Secret").Value.FirstOrDefault();
         var password = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "KEY").Value.FirstOrDefault();
+            x => x.Key == "Secret-Key").Value.FirstOrDefault();
         Console.WriteLine($"Key pass {password}");
         Console.WriteLine($"key expected {Config.PASSWORD}");
         var result = await _repo.Filter(clientId, clientSecret);
