@@ -23,6 +23,17 @@ builder.Services.AddSingleton<ILogService, LogService>();
 builder.Services.AddSingleton<IAuthRepository, AuthRepository>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddHostedService<ServerSocket>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "CorsPolicy", 
+        builder => builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+        );
+});
+
 
 IMapper mapper = MappingConfig.InitializeAutoMapper().CreateMapper();
 builder.Services.AddSingleton(mapper);
@@ -43,6 +54,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+app.UseCors();
 app.MapControllers();
 
 app.Run();
