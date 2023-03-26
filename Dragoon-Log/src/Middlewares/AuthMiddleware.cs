@@ -22,11 +22,13 @@ public class AuthenticationMiddleware
     public async Task InvokeAsync(HttpContext httpContext)
     {
         var password = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "Secret-Key").Value;
+            x => x.Key == "SecretKey").Value;
         var clientId = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "Client-Id").Value;
+            x => x.Key == "ClientId").Value;
         var clientSecret = httpContext.Request.Headers.FirstOrDefault(
-            x => x.Key == "Client-Secret").Value;
+            x => x.Key == "ClientSecret").Value;
+        Console.WriteLine($"client pass {clientId}");
+        Console.WriteLine($"secret pass {clientSecret}");
         Console.WriteLine($"Key pass {password}");
         Console.WriteLine($"key expected {Config.PASSWORD}");
         var result = await _repo.Filter(clientId, clientSecret);
