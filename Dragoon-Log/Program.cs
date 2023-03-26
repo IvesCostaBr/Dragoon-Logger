@@ -26,14 +26,6 @@ builder.Services.AddSingleton<IAuthRepository, AuthRepository>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddHostedService<ServerSocket>();
 builder.Services.AddSingleton(mapper);
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("CorsPolicy",
-        conf => conf.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials());
-}); 
 
 var app = builder.Build();
 
@@ -47,6 +39,8 @@ app.UseMiddleware<AuthenticationMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors(conf =>
+    conf.AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 app.MapControllers();
 
 app.Run();
