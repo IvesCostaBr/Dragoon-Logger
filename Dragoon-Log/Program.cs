@@ -28,19 +28,18 @@ builder.Services.AddHostedService<ServerSocket>();
 builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
-
+app.UseCors(conf =>
+    conf.AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseHttpsRedirection();
 app.UseMiddleware<AuthenticationMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors(conf =>
-    conf.AllowAnyHeader().AllowAnyMethod().AllowCredentials());
-app.MapControllers();
 
 app.Run();
