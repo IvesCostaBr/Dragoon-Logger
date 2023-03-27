@@ -40,7 +40,7 @@ builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
-app.UseCors("CorsPolicy");
+app.UseCors();
 
 if (app.Environment.IsDevelopment())
 {
