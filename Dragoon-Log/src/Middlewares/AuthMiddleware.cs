@@ -30,6 +30,8 @@ public class AuthenticationMiddleware
         Console.WriteLine(password);
         Console.WriteLine(httpContext.Request.Headers);
         Console.WriteLine(httpContext.Request.Query);
+        Console.WriteLine(Config.DATABASE);
+        Console.WriteLine(Config.DATABASE_URI);
         var result = await _repo.Filter(clientId, clientSecret);
         // if (result.Count == 0 && password != Config.PASSWORD)
         // {
