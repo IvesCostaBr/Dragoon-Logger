@@ -12,6 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors(opt =>
+{
+    opt.AddDefaultPolicy(config =>
+    {
+        config.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyOrigin()
+            .AllowCredentials()
+            .AllowAnyMethod();
+    });
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.ResolveConflictingActions (apiDescriptions => apiDescriptions.First ());
@@ -29,17 +40,20 @@ builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(conf =>
-    conf.AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.UseMiddleware<AuthenticationMiddleware>();
+
 app.MapControllers();
 
 app.Run();
