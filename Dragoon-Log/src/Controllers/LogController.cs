@@ -20,6 +20,7 @@ public class LogController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public Task<List<ReceiverLog>> Get([FromQuery] String collection)
     {
+        Console.WriteLine(collection);
         return _service.GetAllAsync(collection);
     }
     
