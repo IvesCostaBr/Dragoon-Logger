@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using Dragoon_Log.DTO;
+using Dragoon_Log.Filter;
 using Dragoon_Log.Logger;
 using Dragoon_Log.Repository.Interfaces;
 
@@ -40,13 +41,23 @@ public class LogRepository: ILogRepository
         return GetCollection(collectionName);
     }
 
-    public async Task<List<ReceiverLog>> ListFilter(Dictionary<string, string> filter, String collectionName)
+    public async Task<List<ReceiverLog>> ListFilter(
+        Dictionary<string, string> queryData,
+        String collectionName,
+        PaginationFilter filter)
     {
         {
-            String keyUpper = filter["key"][0].ToString().ToUpper() + filter["key"].Substring(1);
+            object data;
+            String keyUpper = queryData["key"][0].ToString().ToUpper() + queryData["key"].Substring(1);
+            if (keyUpper == "Date")
+                data = DateTime.Parse(queryData["value"]); else data = queryData["value"];
             var customFilter = Builders<ReceiverLog>.Filter.Eq(
-                keyUpper, DateTime.Parse(filter["value"]));
-            var query = await GetCollection(collectionName).Find(customFilter).ToListAsync();
+                keyUpper, data);
+               
+            var query = await GetCollection(collectionName)
+                .Find(customFilter).SortByDescending(e => e.Date)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Limit(filter.PageSize).ToListAsync();
             return query;
         }
     }

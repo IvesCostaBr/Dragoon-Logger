@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Dragoon_Log.DTO;
+using Dragoon_Log.Filter;
 using Dragoon_Log.service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,19 +19,28 @@ public class LogController : ControllerBase
     
     [HttpGet("")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public Task<List<ReceiverLog>> Get([FromQuery] String collection)
+    public async Task<IActionResult> Get([FromQuery] String collection,
+        [FromQuery] PaginationFilter filter)
     {
-        Console.WriteLine(collection);
-        return _service.GetAllAsync(collection);
+        var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+        var data = await _service.GetAllAsync(collection, validFilter);
+        return Ok(new PagedResponse<List<ReceiverLog>>(
+            data, validFilter.PageNumber, validFilter.PageSize, data.Count));
     }
     
     [HttpGet("filter")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public Task<List<ReceiverLog>> Filter(
-        [FromQuery][Required]Dictionary<String, String> filter, 
-        [FromQuery] String collection)
+    public async Task<IActionResult> FilterLog(
+        [FromQuery] String collection,
+        [FromQuery] String key,
+        [FromQuery] String value,
+        [FromQuery] PaginationFilter filter)
     {
-        return _service.ListFilter(filter, collection);
+        var query = new Dictionary<String, String>(){{"key",key},{"value",value}};
+        var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+        var pageData = await _service.ListFilter(query, collection, validFilter);
+        return Ok(new PagedResponse<List<ReceiverLog>>(
+            pageData, validFilter.PageNumber, validFilter.PageSize, pageData.Count));
     }
     
 }
