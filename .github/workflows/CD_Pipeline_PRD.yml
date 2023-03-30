@@ -11,9 +11,6 @@ jobs:
     name: deploy dragoon-log worker
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Create .ENV
         run: |
           python .github/copy_dotenv.py
@@ -36,10 +33,10 @@ jobs:
           key: ${{ secrets.SERVER_KEY_PRD }}
           port: 22
           script: |
-            cd $HOME/dragon-worker/ 
+            cd $HOME/dragon-worker/Dragoon-Log/
             sudo docker network create internal-net
             ll
-            sudo docker-compose -f Ultimate-Log/docker-compose.yaml up --build -d
+            sudo docker-compose -f docker-compose.yaml up --build -d
             cd ..
 
       - name: Delete Files
@@ -51,14 +48,3 @@ jobs:
           port: 22
           script: |
             sudo rm -r $HOME/dragon-worker/
-
-  Deploy_Dragoon_Log_UI:
-    name: deploy dragoon-log UI
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Create .ENV
-        run: |
-          python .github/copy_dotenv.py
