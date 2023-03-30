@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Create .ENV
         run: |
+          pwd
+          ls
           python ./.github/copy_dotenv.py
 
       - name: Upload application
