@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dragoon-logger
+  namespace: development
+  labels:
+    app: dragoon-logger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dragoon-logger
+  template:
+    metadata:
+      labels:
+        app: dragoon-logger
+    spec:
+      imagePullSecrets:
+      - name: gcr-json-key
+      containers:
+      - name: dragoon-logger
+        image: ${IMAGE_PATH}
+        imagePullPolicy: Always
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dragoon-logger
+  namespace: development
+spec:
+  selector:
+    app: dragoon-logger
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 15000
+      targetPort: 15000
+
+    - protocol: TCP
+      port: 80
+      targetPort: 80

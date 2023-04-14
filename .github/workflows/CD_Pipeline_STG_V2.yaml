@@ -1,0 +1,122 @@
+name: CD DRAGOON STG V2
+
+on:
+  push:
+
+# required secrets
+# SECRET_ENV_DEV - secrets para injetar como varaivel de ambiente
+# G_ACCESS_TOKEN - token github
+# GOOGLE_CREDENTIALS - credentials.json 
+# KUBE_CONFIG - kubeconfig do cluster
+env:
+  SECRETS: ${{ secrets.SECRET_ENV_DEV }}
+  PROJECT_ID: 'wtm-international'
+  IMAGE: 'dragoon-logger'
+  KUBE_CONTEXT: 'wtm-international'
+  TAG: '${{ github.sha }}'
+  CLUSTER_NAMESPACE: 'development'
+  IMAGE_PATH: 'gcr.io/wtm-international/company-service:${{ github.sha }}'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: '${{ github.ref }}'
+
+  checkoutImage:
+    name: Image Valid
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: '${{ github.ref }}'
+
+    - name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+
+    - name: get image gcr
+      id: get_image_repo
+      run: |
+        existing_tags=$(gcloud container images list-tags --filter="tags:${{ env.TAG }}" --format=json gcr.io/${{ env.PROJECT_ID }}/${{ env.IMAGE }})
+        if [[ "$existing_tags" == "[]" ]]; then
+            echo "result=0" >> "$GITHUB_OUTPUT"
+        else
+            echo "result=1" >> "$GITHUB_OUTPUT"
+        fi
+    outputs:
+      value: ${{ steps.get_image_repo.outputs.result }}
+
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [ checkoutImage ]
+    if: ${{ needs.checkoutImage.outputs.value }} == "0" || ${{ needs.checkoutImage.outputs.value }} == 0
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: '${{ github.ref }}'
+
+    - name: valid result
+      run: echo '${{ needs.checkoutImage.outputs.value }}'
+
+    - name: Create .ENV
+      run: |
+        python .github/copy_dotenv.py
+
+    - name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+    
+    - uses: RafikFarhad/push-to-gcr-github-action@v5-beta
+      with:
+        registry: gcr.io
+        project_id: ${{ env.PROJECT_ID }}
+        image_name: ${{ env.IMAGE }}
+        image_tag: ${{ env.TAG }}
+        dockerfile: Dockerfile
+        context: ./Dragoon-Log/
+        
+  deploy:
+    name: Deploy
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ github.ref }}'
+
+      - uses: azure/setup-kubectl@v3
+        with:
+            version: 'latest'
+        id: install 
+
+      - name: Set the Kubernetes context
+        uses: azure/k8s-set-context@v2
+        with:
+          method: kubeconfg
+          context: "${{ env.KUBE_CONTEXT }}"
+          kubeconfig: "${{ secrets.KUBE_CONFIG }}"
+
+      - name: Render k8s manifests
+        run: |
+          envsubst < ./kubernetes/deployment.template.yaml &> ./kubernetes/deployment.yaml
+
+      - name: Deploy to the Kubernetes cluster
+        uses: azure/k8s-deploy@v1
+        with:
+          namespace: ${{ env.CLUSTER_NAMESPACE }}
+          manifests: |
+            ./kubernetes/deployment.yaml
+          images: ${{ env.IMAGE_PATH }}

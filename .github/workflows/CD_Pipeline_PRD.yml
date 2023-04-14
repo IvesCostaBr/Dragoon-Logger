@@ -4,18 +4,19 @@ on:
   workflow_dispatch:
 
 env:
-  SECRETS: ${{ secrets.SECRET_ENV_PRD }}
+  SECRETS: ${{ secrets.SECRET_ENV }}
 
 jobs:
   Deploy_Dragoon_Log_Worker:
     name: deploy dragoon-log worker
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Create .ENV
         run: |
-          pwd
-          ls
-          python ./.github/copy_dotenv.py
+          python .github/copy_dotenv.py
 
       - name: Upload application
         uses: appleboy/scp-action@master
@@ -30,8 +31,8 @@ jobs:
       - name: Deploy Dragoon
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_IP_ADDRESS_PRD }}       
-          username: ${{ secrets.SERVER_USERNAME_PRD }}     
+          host: ${{ secrets.SERVER_IP_ADDRESS_PRD }}        
+          username: ${{ secrets.SERVER_USERNAME_PRD }}      
           key: ${{ secrets.SERVER_KEY_PRD }}
           port: 22
           script: |
@@ -44,8 +45,8 @@ jobs:
       - name: Delete Files
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_IP_ADDRESS_PRD }}       
-          username: ${{ secrets.SERVER_USERNAME_PRD }}     
+          host: ${{ secrets.SERVER_IP_ADDRESS_PRD }}        
+          username: ${{ secrets.SERVER_USERNAME_PRD }}      
           key: ${{ secrets.SERVER_KEY_PRD }}
           port: 22
           script: |
