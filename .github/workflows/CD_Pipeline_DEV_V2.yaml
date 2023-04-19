@@ -25,7 +25,7 @@ env:
   IMAGE: ${{ secrets.REPO_IMAGE_NAME }}
   TAG: '${{ github.sha }}'
   CLUSTER_NAME: 'wtm-dev'
-  NAMESPACE: ${{github.event.inputs.environment}} # NAMESPACE DO CLUSTER A SER DEPLOYADO
+  NAMESPACE: 'development' # NAMESPACE DO CLUSTER A SER DEPLOYADO
   IMAGE_PATH: 'gcr.io/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_IMAGE_NAME }}:${{ github.sha }}'
   DNS_BASE: ${{ secrets.DNS_DEV }}
 
