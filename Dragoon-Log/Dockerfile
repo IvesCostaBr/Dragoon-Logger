@@ -10,6 +10,7 @@ WORKDIR "/src/"
 RUN dotnet build "Dragoon-Log.csproj" -c Release -o /app/build
 
 FROM build AS publish
+COPY [".env", "./"]
 RUN export $(cat .env | xargs) 
 RUN dotnet publish "Dragoon-Log.csproj" -c Release -o /app/publish
 
