@@ -18,9 +18,8 @@ on:
 # G_ACCESS_TOKEN
 # GOOGLE_CREDENTIALS
 # KUBE_CONFIG
-
 env:
-  SECRETS: ${{ secrets.SECRET_ENV }}
+  SECRETS: ${{ secrets.SECRET_ENV_DEV }}
   PROJECT_ID: ${{ secrets.PROJECT_ID }} 
   IMAGE: ${{ secrets.REPO_IMAGE_NAME }}
   TAG: '${{ github.sha }}'
