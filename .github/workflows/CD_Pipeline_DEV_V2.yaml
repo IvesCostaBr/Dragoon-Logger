@@ -11,6 +11,7 @@ on:
         - staging
         - production
         required: true
+  push:
 
 # required secrets
 # SECRET_ENV_DEV
