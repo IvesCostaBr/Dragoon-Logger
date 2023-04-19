@@ -86,7 +86,7 @@ jobs:
         image_name: ${{ env.IMAGE }}
         image_tag: ${{ env.TAG }}
         dockerfile: ./Dragoon-Log/Dockerfile
-        context: ./
+        context: ./Dragoon-Log/
         
   deploy:
     name: Deploy
