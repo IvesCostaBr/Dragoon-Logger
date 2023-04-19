@@ -50,9 +50,12 @@ spec:
   type: ClusterIP
   ports:
     - protocol: TCP
+      name: socker-port
       port: 15000
       targetPort: 15000
 
     - protocol: TCP
+      name: http-port
       port: 80
       targetPort: 80
+---
