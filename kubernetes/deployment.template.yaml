@@ -22,6 +22,21 @@ spec:
       - name: dragoon-logger
         image: ${IMAGE_PATH}
         imagePullPolicy: Always
+        ports:
+          - containerPort: 80
+        # livenessProbe:
+        #   httpGet:
+        #     path: /api/health-check
+        #     port: 7000
+        #     httpHeaders:
+        #     - name: X-Custom-Headers
+        #       value: Awesome
+        #   initialDelaySeconds: 20
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /api/health-check
+        #     port: 7000
 
 ---
 kind: Service

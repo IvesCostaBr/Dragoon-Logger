@@ -1,36 +1,36 @@
-name: CD DRAGOON STG V2
+name: Pipeline Dragoon Logger K8s [V2]
 
 on:
   workflow_dispatch:
-  push:
+    inputs:
+      environment:
+        type: choice
+        description: Ambiente de deploy
+        options: 
+        - development
+        - staging
+        - production
+        required: true
 
 # required secrets
-# SECRET_ENV_DEV - secrets para injetar como varaivel de ambiente
-# G_ACCESS_TOKEN - token github
-# GOOGLE_CREDENTIALS - credentials.json 
-# KUBE_CONFIG - kubeconfig do cluster
+# SECRET_ENV_DEV
+# G_ACCESS_TOKEN
+# GOOGLE_CREDENTIALS
+# KUBE_CONFIG
+
 env:
-  SECRETS: ${{ secrets.SECRET_ENV_DEV }}
-  PROJECT_ID: 'wtm-international'
-  IMAGE: 'dragoon-logger'
-  KUBE_CONTEXT: 'wtm-international'
+  SECRETS: ${{ secrets.SECRET_ENV }}
+  PROJECT_ID: ${{ secrets.PROJECT_ID }} 
+  IMAGE: ${{ secrets.REPO_IMAGE_NAME }}
   TAG: '${{ github.sha }}'
-  CLUSTER_NAMESPACE: 'development'
-  IMAGE_PATH: 'gcr.io/wtm-international/company-service:${{ github.sha }}'
+  CLUSTER_NAME: 'wtm-dev'
+  NAMESPACE: ${{github.event.inputs.environment}} # NAMESPACE DO CLUSTER A SER DEPLOYADO
+  IMAGE_PATH: 'gcr.io/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_IMAGE_NAME }}:${{ github.sha }}'
+  DNS_BASE: ${{ secrets.DNS_DEV }}
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        ref: '${{ github.ref }}'
-
   checkoutImage:
     name: Image Valid
-    needs: [ test ]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -55,12 +55,11 @@ jobs:
     outputs:
       value: ${{ steps.get_image_repo.outputs.result }}
 
-
   build:
     name: Build
     runs-on: ubuntu-latest
     needs: [ checkoutImage ]
-    if: ${{ needs.checkoutImage.outputs.value }} == "0" || ${{ needs.checkoutImage.outputs.value }} == 0
+    if: ${{needs.checkoutImage.outputs.value == 0}}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -85,13 +84,14 @@ jobs:
         project_id: ${{ env.PROJECT_ID }}
         image_name: ${{ env.IMAGE }}
         image_tag: ${{ env.TAG }}
-        dockerfile: Dockerfile
-        context: ./Dragoon-Log/
+        dockerfile: ./Dragoon-Log/Dockerfile
+        context: ./
         
   deploy:
     name: Deploy
-    needs: [ build ]
     runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -107,17 +107,21 @@ jobs:
         uses: azure/k8s-set-context@v2
         with:
           method: kubeconfg
-          context: "${{ env.KUBE_CONTEXT }}"
+          context: "${{ secrets.CLUSTER_NAME }}"
           kubeconfig: "${{ secrets.KUBE_CONFIG }}"
 
       - name: Render k8s manifests
         run: |
           envsubst < ./kubernetes/deployment.template.yaml &> ./kubernetes/deployment.yaml
+          envsubst < ./kubernetes/ingress.template.yaml &> ./kubernetes/ingress.yaml
+          envsubst < ./kubernetes/hpa.template.yaml &> ./kubernetes/hpa.yaml
 
       - name: Deploy to the Kubernetes cluster
         uses: azure/k8s-deploy@v1
         with:
-          namespace: ${{ env.CLUSTER_NAMESPACE }}
+          namespace: ${{ env.NAMESPACE }}
           manifests: |
             ./kubernetes/deployment.yaml
+            ./kubernetes/ingress.yaml
+            ./kubernetes/hpa.yaml
           images: ${{ env.IMAGE_PATH }}
