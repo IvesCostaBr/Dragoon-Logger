@@ -72,10 +72,6 @@ jobs:
     - name: valid result
       run: echo '${{ needs.checkoutImage.outputs.value }}'
 
-    - name: Create .ENV
-      run: |
-        python .github/copy_dotenv.py
-
     - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
       with:
