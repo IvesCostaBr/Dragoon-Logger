@@ -32,6 +32,19 @@ env:
   KUBE_CONFIG: '${{ secrets.KUBE_CONFIG_STG }}'
 
 jobs:
+  environmentDriven:
+    name: environment exec
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: '${{ github.ref }}'
+
+    - name: 'Display Environment Deploy'
+      run: |
+        echo 'ENVIROMENT EXEC : ${{ env.NAMESPACE }}'
+
   checkoutImage:
     name: Image Valid
     runs-on: ubuntu-latest
