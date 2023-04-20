@@ -10,7 +10,6 @@ on:
         - development
         - staging
         required: true
-  push:
 
 # required secrets
 # G_ACCESS_TOKEN
@@ -43,7 +42,7 @@ jobs:
 
     - name: 'Display Environment Deploy'
       run: |
-        echo 'ENVIROMENT EXEC : ${{ env.NAMESPACE }}'
+        echo "ENVIROMENT EXEC : $NAMESPACE"
 
   checkoutImage:
     name: Image Valid

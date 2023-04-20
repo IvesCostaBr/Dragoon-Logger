@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dragoon-logger
-  namespace: development
+  namespace: ${NAMESPACE}
   labels:
     app: dragoon-logger
 spec:
@@ -46,7 +46,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dragoon-logger
-  namespace: development
+  namespace: ${NAMESPACE}
 spec:
   selector:
     app: dragoon-logger
