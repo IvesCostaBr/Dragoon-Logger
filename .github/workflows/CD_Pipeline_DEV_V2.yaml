@@ -123,7 +123,7 @@ jobs:
 
       - name: Render k8s manifests
         run: |
-          if [[ ${{ env.NAMESPACE == 'development' }} ]];then
+          if [[ ${{ env.NAMESPACE }} == 'development' ]];then
               export DNS_BASE='${{ env.DNS_DEV }}'
           else
               export DNS_BASE='${{ env.DNS_STG }}'
