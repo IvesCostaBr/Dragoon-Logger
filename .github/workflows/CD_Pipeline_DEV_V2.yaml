@@ -1,4 +1,4 @@
-name: Pipeline Dragoon Logger K8s [V2]
+name: Pipeline DEV_STG
 
 on:
   workflow_dispatch:
@@ -9,24 +9,26 @@ on:
         options: 
         - development
         - staging
-        - production
         required: true
-  push:
 
 # required secrets
-# SECRET_ENV_DEV
 # G_ACCESS_TOKEN
 # GOOGLE_CREDENTIALS
 # KUBE_CONFIG
+# DNS_DEV
+# DNS_STG
+# CONFIG_MAP_DEV
+# CONFIG_MAP_STG
 env:
-  SECRETS: ${{ secrets.SECRET_ENV_DEV }}
-  PROJECT_ID: ${{ secrets.PROJECT_ID }} 
-  IMAGE: ${{ secrets.REPO_IMAGE_NAME }}
+  PROJECT_ID: '${{ secrets.PROJECT_ID }}'
+  IMAGE: '${{ secrets.REPO_IMAGE_NAME }}'
   TAG: '${{ github.sha }}'
-  CLUSTER_NAME: 'wtm-dev'
-  NAMESPACE: 'development' # NAMESPACE DO CLUSTER A SER DEPLOYADO
+  CLUSTER_NAME: '${{ secrets.CLUSTER_NAME_STG }}'
+  NAMESPACE: '${{github.event.inputs.environment}}'
   IMAGE_PATH: 'gcr.io/${{ secrets.PROJECT_ID }}/${{ secrets.REPO_IMAGE_NAME }}:${{ github.sha }}'
-  DNS_BASE: ${{ secrets.DNS_DEV }}
+  DNS_STG: ${{ secrets.DNS_STG }}
+  DNS_DEV: ${{ secrets.DNS_DEV }}
+  KUBE_CONFIG: '${{ secrets.KUBE_CONFIG_STG }}'
 
 jobs:
   checkoutImage:
@@ -107,14 +109,19 @@ jobs:
         uses: azure/k8s-set-context@v2
         with:
           method: kubeconfg
-          context: "${{ secrets.CLUSTER_NAME }}"
-          kubeconfig: "${{ secrets.KUBE_CONFIG }}"
+          context: "${{ env.CLUSTER_NAME }}"
+          kubeconfig: "${{ env.KUBE_CONFIG }}"
 
       - name: Render k8s manifests
         run: |
+          if [[ ${{ env.NAMESPACE == 'development' }} ]];then
+              export DNS_BASE='${{ env.DNS_DEV }}'
+          else
+              export DNS_BASE='${{ env.DNS_STG }}'
+          fi
           envsubst < ./kubernetes/deployment.template.yaml &> ./kubernetes/deployment.yaml
           envsubst < ./kubernetes/ingress.template.yaml &> ./kubernetes/ingress.yaml
-          envsubst < ./kubernetes/hpa.template.yaml &> ./kubernetes/hpa.yaml
+          # envsubst < ./kubernetes/hpa.template.yaml &> ./kubernetes/hpa.yaml
 
       - name: Deploy to the Kubernetes cluster
         uses: azure/k8s-deploy@v1
@@ -123,5 +130,4 @@ jobs:
           manifests: |
             ./kubernetes/deployment.yaml
             ./kubernetes/ingress.yaml
-            ./kubernetes/hpa.yaml
           images: ${{ env.IMAGE_PATH }}

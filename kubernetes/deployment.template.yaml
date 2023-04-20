@@ -24,6 +24,9 @@ spec:
         imagePullPolicy: Always
         ports:
           - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: dragoon-config
         # livenessProbe:
         #   httpGet:
         #     path: /api/health-check
